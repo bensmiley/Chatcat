@@ -1,4 +1,5 @@
 Chatcat
 =======
 
-Developer tools and plugins for Chatcat instant messenger
+Developer tools and plugins for Chatcat instant messenger. 
+
