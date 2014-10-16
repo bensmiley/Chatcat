@@ -45,7 +45,13 @@ class CCAuth {
         $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
 
         // Make a cURL request to the authentication API
-        $url = $protocol . 'chatcat.io/wp-content/plugins/chatcat-api/cc-auth-api.php';
+        $url = null;
+        if($_SERVER['SERVER_NAME'] == 'ccwp') {
+            $url = 'http://ccwp/wp-content/plugins/chatcat-api/cc-auth-api.php';
+        }
+        else {
+            $url = $protocol . 'chatcat.io/wp-content/plugins/chatcat-api/cc-auth-api.php';
+        }
 
         //set the url, number of POST vars, POST data
         curl_setopt($ch,CURLOPT_URL, $url);
@@ -70,9 +76,11 @@ class CCAuth {
      * @param string $yearOfBirth - in YYYY format
      * @param string $city - City or residence
      * @param string $countryCode - i.e. GB, US
+     * @param string $imageURL - i.e. A url to the user's profile image - must be JPEG or PNG
      * @param array  $options [Optional] - Extra parameters to be passed back to chat client
+     *                   - 'profileHTML': must contains HTML that will be displayed instead of the default user popup
      */
-    function authUser($name, $status, $gender, $yearOfBirth, $city, $countryCode, $options = null) {
+    function authUser($name, $status, $gender, $yearOfBirth, $city, $countryCode, $imageURL, $options = null) {
 
         // First get the user's token - if that's valid then return the user's information
         // plus the token to the client
@@ -87,7 +95,8 @@ class CCAuth {
                 'yearOfBirth' => $yearOfBirth,
                 'city' => $city,
                 'countryCode' => $countryCode,
-                'token' => $token->token
+                'token' => $token->token,
+                'imageURL' => $imageURL
             );
 
             if(isset($options)) {
