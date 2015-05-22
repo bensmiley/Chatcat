@@ -46,12 +46,12 @@ class CCAuth {
 
         // Make a cURL request to the authentication API
         $url = null;
-        if($_SERVER['SERVER_NAME'] == 'ccwp') {
-            $url = 'http://ccwp/wp-content/plugins/chatcat-api/cc-auth-api.php';
-        }
-        else {
-            $url = $protocol . 'chatcat.io/wp-content/plugins/chatcat-api/cc-auth-api.php';
-        }
+        //if($_SERVER['SERVER_NAME'] == 'ccwp') {
+        //    $url = 'http://ccwp/wp-content/plugins/chatcat-api/cc-auth-api.php';
+        //}
+        //else {
+            $url = 'http://api.chatcatapp.com/cc-auth-api.php';
+        //}
 
         //set the url, number of POST vars, POST data
         curl_setopt($ch,CURLOPT_URL, $url);
