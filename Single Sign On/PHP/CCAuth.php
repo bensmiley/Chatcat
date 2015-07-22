@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  */
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 class CCAuth {
 
@@ -120,6 +119,12 @@ class CCAuth {
     }
 
     function userInfoArray () {
+
+        $token = '';
+        if(isset($this->token) && isset($this->token->token)) {
+            $token = $this->token->token;
+        }
+
         $info = array(
             'name' => $this->name,
             'status' => $this->status,
@@ -127,7 +132,7 @@ class CCAuth {
             'yearOfBirth' => $this->yearOfBirth,
             'city' => $this->city,
             'countryCode' => $this->countryCode,
-            'token' => $this->token->token,
+            'token' => $token,
             'imageURL' => $this->imageURL
         );
         if(isset($this->options)) {

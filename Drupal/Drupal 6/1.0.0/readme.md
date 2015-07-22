@@ -1,0 +1,1 @@
+[Setup Instructions](http://dev.chatcatapp.com/docs/drupal_6)
