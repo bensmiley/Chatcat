@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<product productid="chat_cat_10" active="1">
+    <title>Chatcat</title>
+    <description>Chatcat messenger integration</description>
+    <version>1.0.0</version>
+    <url />
+    <versioncheckurl />
+    <dependencies></dependencies>
+    <codes></codes>
+    <templates></templates>
+    <stylevardfns></stylevardfns>
+    <stylevars></stylevars>
+    <plugins>
+        <plugin active="1" executionorder="5">
+            <title>chat hook start</title>
+            <hookname>global_complete</hookname>
+            <phpcode>
+                <![CDATA[
+require(DIR . '/CCAuth.php');
+
+if (isset($vbulletin->options['chat_cat_messenger_api']) && strlen($vbulletin->options['chat_cat_messenger_api']) > 0)
+{
+	$sinonurl = $vbulletin->options['bburl'] . '/ajaxchat.php';
+}
+else
+{
+	$sinonurl  = '';
+}
+
+if ($vbulletin->options['chat_cat_messenger_primary_url'])
+{
+	$primary_url = $vbulletin->options['chat_cat_messenger_primary_url'];
+}
+else
+{
+	$primary_url = '';
+}
+
+if ($vbulletin->options['chat_cat_messenger_login_url'])
+{
+	$login_url = $vbulletin->options['chat_cat_messenger_login_url'];
+}
+else
+{
+	$login_url = '';
+}
+
+if ($vbulletin->options['chat_cat_messenger_register_url'])
+{
+	$registerurl = $vbulletin->options['chat_cat_messenger_register_url'];
+}
+else
+{
+	$registerurl = $vbulletin->options['bburl'] . '/register.php';
+}
+
+?>
+
+<div ng-app="myApp" ><ng-include src=" baseURL + 'chatcat.html'" ng-controller="AppController"></ng-include></div>
+
+<script type="text/javascript">
+
+var baseURL = '<?php echo $vbulletin->options['bburl']; ?>';
+
+// Set options here
+var CC_OPTIONS = {
+
+	primaryDomain: '<?php echo $primary_url; ?>',
+
+	// Users can create public chat rooms?
+	// If this is true users will be able to setup new
+	// public rooms
+	usersCanCreatePublicRooms: true,
+
+	// Allow anonymous login?
+	anonymousLoginEnabled: false,
+
+	// Enable social login - please email us to get your domain whitelisted
+	socialLoginEnabled: true,
+
+	// The URL to contact for single sign on
+	singleSignOnURL: '<?php echo $sinonurl; ?>',
+	singleSignOnAPILevel: 1,
+
+	// Optional - if this is set the login box will direct users
+	// to log in
+	loginURL: '<?php echo $login_url; ?>',
+
+	// Optional - if this is set the login box will direct users
+	// to register
+	registerURL: '<?php echo $registerurl; ?>'
+
+}
+
+var ccProtocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+
+// PRODUCTION
+document.write(decodeURI("%3Clink rel='stylesheet' href='" + ccProtocol + "chatcat.firebaseapp.com/css/_/cc_styles.min.css' %3E%3C/link%3E"));
+document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat.firebaseapp.com/js/all.min.js' type='text/javascript'%3E%3C/script%3E"));
+
+</script>
+		
+<style>
+
+.formcontrols 
+{
+	height:auto !important;
+}
+* html .floatcontainer, .formcontrols .blockrow, dl.stats 
+{
+    height: auto !important;
+}
+
+</style>
+
+]]>
+            </phpcode>
+        </plugin>
+        <plugin active="0" executionorder="5">
+            <title>CCAuthentication</title>
+            <hookname>global_complete</hookname>
+            <phpcode>
+                <![CDATA[
+
+require(DIR . '/ajaxchat.php');
+$xml = new vB_AJAX_XML_Builder($vbulletin, 'text/xml');
+
+function cc_get_token()
+{
+	return 'checking';
+}
+
+cc_get_token();
+
+]]>
+            </phpcode>
+        </plugin>
+    </plugins>
+    <phrases>
+        <phrasetype name="GLOBAL" fieldname="global">
+            <phrase name="chat_massanger" date="1417169905" username="admin" version="1.0.0">
+                <![CDATA[Chat Massanger]]>
+            </phrase>
+            <phrase name="settinggroup_chatcat_messenger" date="1418305889" username="admin" version="1.0.0">
+                <![CDATA[Chatcat Options]]>
+            </phrase>
+        </phrasetype>
+        <phrasetype name="vBulletin Settings" fieldname="vbsettings">
+            <phrase name="setting_chat_cat_messenger_api_desc" date="1419398695" username="admin" version="1.0.0">
+                <![CDATA[If left blank, single sign on will be disabled.]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_api_title" date="1419398695" username="admin" version="1.0.0">
+                <![CDATA[Chatcat API Key]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_login_url_desc" date="1419398878" username="admin" version="1.0.0">
+                <![CDATA[Enter custom login URL]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_login_url_title" date="1419398878" username="admin" version="1.0.0">
+                <![CDATA[Login URL]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_primary_url_desc" date="1419399328" username="admin" version="1.0.0" />
+            <phrase name="setting_chat_cat_messenger_primary_url_title" date="1419399328" username="admin" version="1.0.0">
+                <![CDATA[Primary URL]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_register_url_desc" date="1419398962" username="admin" version="1.0.0">
+                <![CDATA[Enter custom registration URL]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_register_url_title" date="1419398962" username="admin" version="1.0.0">
+                <![CDATA[Registration URL]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_secret_desc" date="1419398962" username="admin" version="1.0.0">
+                <![CDATA[You can find your secret at dev.chatcatapp.com]]>
+            </phrase>
+            <phrase name="setting_chat_cat_messenger_secret_title" date="1419398962" username="admin" version="1.0.0">
+                <![CDATA[Secret]]>
+            </phrase>
+            <phrase name="settinggroup_chatcat_messenger" date="1417443014" username="jaspal" version="1.0.0">
+                <![CDATA[Chatcat Options]]>
+            </phrase>
+        </phrasetype>
+    </phrases>
+    <options>
+        <settinggroup name="chatcat_messenger" displayorder="6800">
+            <setting varname="chat_cat_messenger_api" displayorder="11">
+                <datatype>free</datatype>
+            </setting>
+            <setting varname="chat_cat_messenger_secret" displayorder="11">
+                <datatype>free</datatype>
+            </setting>
+            <setting varname="chat_cat_messenger_login_url" displayorder="15">
+                <datatype>free</datatype>
+                <validationcode>
+                    <![CDATA[
+if(!filter_var($data, FILTER_VALIDATE_URL) && strlen($data) > 0)
+{
+	return false;
+}
+else 
+{
+	return true;
+}
+]]>
+                </validationcode>
+            </setting>
+            <setting varname="chat_cat_messenger_register_url" displayorder="19">
+                <datatype>free</datatype>
+                <validationcode>
+                    <![CDATA[
+if(!filter_var($data, FILTER_VALIDATE_URL) && strlen($data) > 0)
+{
+	return false;
+}
+else {
+	return true;
+}
+]]>
+                </validationcode>
+            </setting>
+            <setting varname="chat_cat_messenger_primary_url" displayorder="23">
+                <datatype>free</datatype>
+            </setting>
+        </settinggroup>
+        <settinggroup name="register" displayorder="200">
+            <setting varname="remove_connection_map" displayorder="150">
+                <datatype>boolean</datatype>
+                <optioncode>yesno</optioncode>
+                <defaultvalue>0</defaultvalue>
+            </setting>
+        </settinggroup>
+    </options>
+    <helptopics></helptopics>
+    <cronentries></cronentries>
+    <faqentries></faqentries>
+    <navigation></navigation>
+</product>
