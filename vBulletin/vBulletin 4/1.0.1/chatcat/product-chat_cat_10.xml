@@ -16,6 +16,7 @@
             <hookname>global_complete</hookname>
             <phpcode>
                 <![CDATA[
+
 require(DIR . '/CCAuth.php');
 
 if (isset($vbulletin->options['chat_cat_messenger_api']) && strlen($vbulletin->options['chat_cat_messenger_api']) > 0)
@@ -113,24 +114,7 @@ document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat.firebaseapp.c
 
 </style>
 
-]]>
-            </phpcode>
-        </plugin>
-        <plugin active="0" executionorder="5">
-            <title>CCAuthentication</title>
-            <hookname>global_complete</hookname>
-            <phpcode>
-                <![CDATA[
-
-require(DIR . '/ajaxchat.php');
-$xml = new vB_AJAX_XML_Builder($vbulletin, 'text/xml');
-
-function cc_get_token()
-{
-	return 'checking';
-}
-
-cc_get_token();
+<?php 
 
 ]]>
             </phpcode>
