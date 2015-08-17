@@ -166,18 +166,25 @@ function chatcat_insert_footer() {
             $secret = $mybb->settings['chatcat_secret'];
             $uid = $user['uid'];
             
-            $useravatar = format_avatar(htmlspecialchars_uni($user['avatar']), $user['avatardimensions'], my_strtolower($mybb->settings['memberlistmaxavatarsize']));
-            
-            if(!empty($useravatar['image'])){
-                $src = $useravatar['image'];
+            if(function_exists('format_avatar')) {
+                
+                $useravatar = format_avatar(htmlspecialchars_uni($user['avatar']), $user['avatardimensions'], my_strtolower($mybb->settings['memberlistmaxavatarsize']));
+                
+                if(!empty($useravatar['image'])){
+                    $src = $useravatar['image'];
+                }
             }
-            
+        
             $username = $user['username'];
             $dateOfBirth = strtotime($user['birthday']) * 1000;
+            
+            var_dump($user);
+            
             
             // Get the user's description
             $description = $user['fid2'];
             $location = $user['fid1'];
+            $sex = $user['fid3'];
             
             $params = array(
                 'api_key' => $api_key,
@@ -188,6 +195,7 @@ function chatcat_insert_footer() {
                 'uid' => $uid,
                 'dateOfBirth' => $dateOfBirth,
                 'location' => $location,
+                'sex' => $sex,
                 'homepage' => urlencode($mybb->settings['bburl']."/".get_profile_link($uid))
             );
             

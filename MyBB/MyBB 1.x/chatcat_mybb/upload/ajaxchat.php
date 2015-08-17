@@ -25,6 +25,8 @@ function get_auth () {
         $yearOfBirth = $_REQUEST['yearOfBirth'];
         $location = $_REQUEST['location'];
         $homepage = urldecode($_REQUEST['homepage']);
+        $sex = $_REQUEST['sex'];
+        $sex = $sex == 'Male' ? 'M' : 'F';
         
         // Create a new Auth instance
         $auth = new CCAuth ($user_id, $secret, $api_key, '');
@@ -32,7 +34,7 @@ function get_auth () {
         // Authenticate the user
         $auth->setUserInfo($username,
                            $description, 
-                           null, 
+                           $sex,
                            $yearOfBirth,
                            $location,
                            null, 
