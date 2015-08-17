@@ -1,0 +1,179 @@
+<?php
+/**
+ * Display help and module information
+ * @param path which path of the site we're displaying help
+ * @param arg array that holds the current path as would be returned from arg() function
+ * @return help text for the path
+ */
+require_once "CCAuth.php";
+require_once "Common.php";
+
+function chatcat_help($path, $arg) {
+  $output = '';  //declare your output variable
+  switch ($path) {
+    case "admin/help#chatcat":
+      $output = '<p>'.  t("Add Chatcat instant messenger to your website") .'</p>';
+      break;
+  }
+  return $output;
+} // function chatcat_help
+
+/**
+ * Implements hook_menu().
+ */
+function chatcat_menu() {
+  $items = array();
+
+  $items['admin/settings/chatcat'] = array(
+    'title' => 'Chatcat',
+    'description' => 'Change Chatcat plugin configurations',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('chatcat_settings_form'),
+    'access arguments' => array('administer chatcat'),
+    'file' => 'chatcat.admin.inc',
+  );
+
+   $items['chatcat/get/token'] = array(
+    'page callback' => 'chatcat_get_token_ajax',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+ 
+  return $items;
+}
+
+
+function chatcat_block($op = 'list', $delta = 0, $edit = array()) {
+
+    global $base_url;
+
+    switch ($op) {
+        case 'list':
+            $blocks[0]['info'] = t('chatcat block.');
+            $blocks[0]['cache'] = BLOCK_NO_CACHE;
+   
+            return $blocks;
+   
+        case 'view':
+
+            $primary_domain = variable_get('chatcat-primary-domain','');
+
+			// If the API key isn't set disable the API URL
+			$api_key = variable_get('chatcat-api-key','');
+			if(!isset($api_key) || !strlen($api_key)) {
+				$sso_url = '';
+			}
+			else {
+				$sso_url = $base_url.'/chatcat/get/token';
+			}
+
+			// Setup the login and register URLs
+			$login_url = variable_get('chatcat-login-url','');
+	
+			if(!isset($login_url) || strlen($login_url) == 0) {
+				$login_url = $_SERVER['SERVER_NAME'].base_path().'user';
+			}
+			if($login_url != ''){
+				if (!preg_match("@^[hf]tt?ps?://@", $login_url)) {
+					$login_url = "http://" . $login_url;
+				}
+			}
+
+			// Setup the login and register URLs
+			$register_url = variable_get('chatcat-register-url','');
+			if(!isset($register_url) || strlen($register_url) == 0) {
+				$register_url = $_SERVER['SERVER_NAME'].base_path().'user/register';
+				// $register_url = "";
+			}
+			if( $register_url != ""){
+				if (!preg_match("@^[hf]tt?ps?://@", $register_url)) {
+					$register_url = "http://" . $register_url;
+				}
+			}
+
+            $output = Common::getIncludeCode($primary_domain, $sso_url, $login_url, $register_url);
+
+            $blocks['subject'] = t('');
+            $blocks['content'] = $output;
+
+            return $blocks;
+   
+    }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function chatcat_permission() {
+  return array(
+    'administer chatcat' => array(
+      'title' => t('Administer Chatcat'),
+      'description' => t('Allow administratior to administer chat configurations'),
+    ),
+  );
+}
+/**
+* Implementation of hook_install()
+*/
+function chatcat_install() {
+  // Set the module weight so it can override other modules.
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'chatcat'");
+}
+
+/**
+* Implementation of hook_uninstall()
+*/
+function chatcat_uninstall() {
+    // Remove variables which is defined in our module
+    variable_del('chatcat-api-key');
+    variable_del('chatcat-primary-domain');
+    variable_del('chatcat-secret');
+    variable_del('chatcat-login-url');
+    variable_del('chatcat-register-domain');
+}
+
+function get_auth () {
+
+    global $user;
+    global $base_url;
+
+    if($user->uid > 0) {
+
+        // Get the API key from the settings
+        $api_key = variable_get('chatcat-api-key','');
+        $secret = variable_get('chatcat-secret', '');
+
+        // Create a new Auth instance
+        $auth = new CCAuth ($user->uid, $secret, $api_key, '');
+
+        $home_link = $base_url . '/?q=user';
+
+        $description ='';
+
+        $auth->setUserInfo($user->name, $description, null, null, null, null, null, array('homepageLink' => $home_link));
+
+        return $auth;
+    }
+    else {
+        return null;
+    }
+}
+
+function chatcat_get_token_ajax () {
+
+    $auth = get_auth();
+
+    if($auth) {
+        if(isset($_GET['action']) && $_GET['action'] == 'cc_get_uid') {
+            $auth->respondWithUserID();
+        }
+        if(isset($_GET['action']) && $_GET['action'] == 'cc_get_token') {
+            $auth->respondWithToken();
+        }
+    }
+    else {
+        CCAuth::logout();
+    }
+}
+
+

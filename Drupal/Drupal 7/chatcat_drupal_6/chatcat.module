@@ -1,0 +1,225 @@
+<?php
+
+function chatcat_permission(){
+	return array(
+			'administer chatcat' => array(
+			'title' => t("administer chatcat"),
+			'description' => t('performs administer task'),
+		),
+	);
+}
+
+function chatcat_block_view ($delta = '') {
+
+    global $base_url;
+
+	$block = array();
+
+	if($delta == 'chatcat') {
+	
+        $primary_domain = variable_get('chatcat-primary-domain','');
+
+        // If the API key isn't set disable the API URL
+        $api_key = variable_get('chatcat-api-key','');
+
+        if(!isset($api_key) || !strlen($api_key)) {
+            $sso_url = '';
+        }
+        else {
+            $sso_url = $base_url.'/chatcat/get/token';
+        }
+
+        // Setup the login and register URLs
+        $login_url = variable_get('chatcat-login-url','');
+
+        if(!isset($login_url) || strlen($login_url) == 0) {
+            $login_url = $base_url.'/user';
+        }
+        else {
+            if (!preg_match("@^[hf]tt?ps?://@", $login_url)) {
+                $login_url = "http://" . $login_url;
+            }
+        }
+
+        // Setup the login and register URLs
+        $register_url = variable_get('chatcat-register-url','');
+
+        if(!isset($register_url) || strlen($register_url) == 0) {
+            $register_url = $base_url.'/user/register';
+        }
+        else {
+            if (!preg_match("@^[hf]tt?ps?://@", $register_url)) {
+                $register_url = "http://" . $register_url;
+            }
+        }
+
+        $output = Common::getIncludeCode($primary_domain, $sso_url, $login_url, $register_url);
+
+		$block['subject'] = "";
+		$block['content'] = $output;
+	}
+	return $block;
+}
+
+function chatcat_block_info () {
+    $blocks['chatcat'] = array(
+    	'info' => t('Chatcat'),
+    	'cache' => DRUPAL_NO_CACHE,
+  	);
+  	return $blocks;
+}
+
+function chatcat_menu(){
+	$items['admin/config/chatcat'] = array(
+		'title' => 'Chatcat',
+		'type' => MENU_NORMAL_ITEM,
+		'description' => 'Configure my module',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('chatcat_admin_form'),
+		'access arguments' => array('administer chatcat'),
+	);
+		
+	$items['chatcat'] = array(
+		'title' => 'Chatcat',
+		'type' => MENU_NORMAL_ITEM,
+		'description' => 'Configure my module',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('chatcat_admin_form'),
+		'access arguments' => array('administer chatcat'),
+	);
+	
+    $items['chatcat/get/token'] = array(
+    	'page callback' => 'chatcat_get_token_ajax',
+    	'type' => MENU_CALLBACK,
+    	'access arguments' => array('access content'),
+    );
+	
+	return $items;
+}
+
+function chatcat_admin_form($form, &$form_state) {
+	
+	$form['chatcat-api-key'] = array(
+	    '#type' => 'textfield',
+		'#title' => t('Chatcat API Key'),
+		'#description' => 'If left blank, single sign on will be disabled.',
+		'#default_value'  => variable_get('chatcat-api-key',''),
+	);
+
+	$form['chatcat-secret'] = array(
+	    '#type' => 'textfield',
+		'#title' => t('Chatcat Secret'),
+		'#description' => 'You can find your secret from the dashboard at dev.chatcatapp.com',
+		'#default_value'  => variable_get('chatcat-secret',''),
+	);
+	
+	$form['chatcat-primary-domain'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Primary URL'),
+		'#default_value'  => variable_get('chatcat-primary-domain',''),
+	);
+	
+	$form['chatcat-register-url'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Registration URL'),
+		'#description' => 'Enter custom registration URL',
+		'#default_value'  => variable_get('chatcat-register-url',''),
+	);
+	
+	$form['chatcat-login-url'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Login URL'),
+		'#description' => 'Enter custom login URL',
+		'#default_value'  => variable_get('chatcat-login-url',''),
+	);
+	
+	return system_settings_form($form);
+}
+
+function chatcat_admin_form_submit($form, &$form_state) {
+	
+	$input = $form_state['input'];
+// 	$api_key = variable_get('api-key','');
+// 	$login_url = variable_get('login-url','');
+// 	$registration_url = variable_get('registration-url','');
+	
+	drupal_set_message(t('API key saved'));
+}
+
+function chatcat_admin_form_validate($form,&$form_state){
+
+	//$api_key = $form_state['input']['api-key'];
+	$login_url = $form_state['input']['chatcat-login-url'];
+	$registration_url = $form_state['input']['chatcat-register-url'];
+	
+// 	$api_key_length = strlen($api_key);
+// 	if($api_key_length != 0 && $api_key_length != 40){
+// 		form_set_error('api-key', 'Please enter a valid API key.');
+// 	}
+	
+	if(!filter_var($login_url, FILTER_VALIDATE_URL) && strlen($login_url) > 0 ){
+			form_set_error('chatcat-login-url', 'Missing http:// prefix in Login URL.');
+		}
+		
+	if(!filter_var($registration_url, FILTER_VALIDATE_URL ) && strlen($registration_url) > 0 ){
+		form_set_error('chatcat-register-url', 'Missing http:// prefix in Login URL.');
+	}
+		
+}
+
+function get_auth () {
+
+    global $user;
+    global $base_url;
+
+    if($user->uid > 0) {
+
+        // Get the API key from the settings
+        $api_key = variable_get('chatcat-api-key','');
+        $secret = variable_get('chatcat-secret', '');
+
+        // Create a new Auth instance
+        $auth = new CCAuth ($user->uid, $secret, $api_key, '');
+
+        // Add the user's details
+        $image_url = theme('user_picture', array('account' =>$user));
+
+        $htmlDom = new DOMDocument();
+        $htmlDom->loadHTML($image_url);
+
+        $xpath = new DOMXPath($htmlDom);
+        $image_src = $xpath->evaluate("string(//img/@src)");
+
+        $home_link = $base_url . '/?q=user';
+
+        $description ='';
+
+        $auth->setUserInfo($user->name, $description, null, null, null, null, $image_src, array('homepageLink' => $home_link));
+
+        return $auth;
+    }
+    else {
+        return null;
+    }
+}
+
+function chatcat_get_token_ajax () {
+
+    $auth = get_auth();
+
+    if($auth) {
+        if(isset($_GET['action']) && $_GET['action'] == 'cc_get_uid') {
+            $auth->respondWithUserID();
+        }
+        if(isset($_GET['action']) && $_GET['action'] == 'cc_get_token') {
+            $auth->respondWithToken();
+        }
+    }
+    else {
+        CCAuth::logout();
+    }
+
+}
+
+
+?>

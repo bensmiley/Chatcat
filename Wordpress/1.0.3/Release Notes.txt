@@ -1,4 +1,0 @@
-Chatcat Wordpress Plugin 1.0.3
-
-- Plugin updated to work with new back end
-- Secret field added

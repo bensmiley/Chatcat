@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="chat_cat_10" active="1">
+	<title>Chatcat</title>
+	<description>Chatcat messenger integration</description>
+	<version>1.1.0</version>
+	<url />
+	<versioncheckurl />
+	<dependencies>
+	</dependencies>
+	<codes>
+	</codes>
+	<templates>
+		<template name="chat_cat_temp" templatetype="template" date="1310138943" username="admin" version="1.0"><![CDATA[{vb:data apidat , chatcat, get_admin_detail_chat}
+
+	  <script type="text/javascript">        
+	           
+    var CC_OPTIONS = {
+
+           primaryDomain: '{vb:raw apidat.primaryurl}',
+           
+            usersCanCreatePublicRooms: true,
+
+            // Allow anonymous login?
+            anonymousLoginEnabled: false,
+
+            // Enable social login - please email us to get your domain whitelisted
+            socialLoginEnabled: true,
+
+            // The URL to contact for single sign on
+            singleSignOnURL: '{vb:raw apidat.sinonurl}',
+            singleSignOnAPILevel: 1,
+
+            // Optional - if this is set the login box will direct users
+            // to log in
+            loginURL: '{vb:raw apidat.loginurl}',
+
+            // Optional - if this is set the login box will direct users
+            // to register
+            registerURL: '{vb:raw apidat.registerurl}'
+
+        }
+
+        var ccProtocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+
+        // PRODUCTION
+        document.write(decodeURI("%3Clink rel='stylesheet' href='" + ccProtocol + "chatcat.firebaseapp.com/css/_/cc_styles.min.css' %3E%3C/link%3E"));
+        document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat.firebaseapp.com/js/all.min.js' type='text/javascript'%3E%3C/script%3E"));
+
+   
+</script>
+
+]]></template>
+		<template name="chat_cat_temp_div" templatetype="template" date="1310138943" username="admin" version="1.0"><![CDATA[<div ng-app="myApp" ><ng-include src="  baseURL + 'chatcat.html'" ng-controller="AppController"></ng-include></div>]]></template>
+	</templates>
+	<stylevardfns>
+	</stylevardfns>
+	<stylevars>
+	</stylevars>
+	<hooks>
+		<hook>
+			<hookname>footer_start</hookname>
+			<title>chat hook start</title>
+			<active>1</active>
+			<hookorder>20</hookorder>
+			<template>chat_cat_temp</template>
+			<arguments />
+		</hook>
+		<hook>
+			<hookname>footer_start</hookname>
+			<title>chat html</title>
+			<active>1</active>
+			<hookorder>10</hookorder>
+			<template>chat_cat_temp_div</template>
+			<arguments />
+		</hook>
+	</hooks>
+	<phrases>
+		<phrasetype name="vBulletin Settings" fieldname="vbsettings">
+			<phrase name="setting_chat_cat_messenger_api_desc" date="1419406223" username="admin" version="1.1.0"><![CDATA[If left blank, single sign on will be disabled.]]></phrase>
+			<phrase name="setting_chat_cat_messenger_api_title" date="1419406223" username="admin" version="1.1.0"><![CDATA[Chatcat API Key]]></phrase>
+			<phrase name="setting_chat_cat_messenger_login_url_desc" date="1419406279" username="admin" version="1.1.0"><![CDATA[Enter custom login URL]]></phrase>
+			<phrase name="setting_chat_cat_messenger_login_url_title" date="1419406279" username="admin" version="1.1.0"><![CDATA[Login URL]]></phrase>
+			<phrase name="setting_chat_cat_messenger_primary_url_desc" date="1419406351" username="admin" version="1.1.0"><![CDATA[Primary URL]]></phrase>
+			<phrase name="setting_chat_cat_messenger_primary_url_title" date="1419406351" username="admin" version="1.1.0"><![CDATA[Primary URL (optional)]]></phrase>
+			<phrase name="setting_chat_cat_messenger_register_url_desc" date="1419406317" username="admin" version="1.1.0"><![CDATA[Enter custom registration URL]]></phrase>
+			<phrase name="setting_chat_cat_messenger_register_url_title" date="1419406317" username="admin" version="1.1.0"><![CDATA[Registration URL]]></phrase>
+			<phrase name="setting_chat_cat_messenger_secret_desc" date="1419406317" username="admin" version="1.1.0"><![CDATA[You can find your secret at dev.chatcatapp.com]]></phrase>
+			<phrase name="setting_chat_cat_messenger_secret_title" date="1419406317" username="admin" version="1.1.0"><![CDATA[Secret]]></phrase>
+			<phrase name="settinggroup_chat_cat_messenger" date="1418474090" username="admin" version="1.0.0"><![CDATA[Chatcat Options]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="chat_cat_messenger" displayorder="6710">
+			<setting varname="chat_cat_messenger_api" displayorder="20">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="chat_cat_messenger_secret" displayorder="25">
+				<datatype>free</datatype>
+			</setting>
+
+			<setting varname="chat_cat_messenger_login_url" displayorder="30">
+				<datatype>free</datatype>
+				<validationcode><![CDATA[if(!filter_var($data, FILTER_VALIDATE_URL) && strlen($data) > 0)
+		{
+     
+		return false;
+		}else{
+return true;
+}]]></validationcode>
+			</setting>
+			<setting varname="chat_cat_messenger_register_url" displayorder="40">
+				<datatype>free</datatype>
+				<validationcode><![CDATA[if(!filter_var($data, FILTER_VALIDATE_URL) && strlen($data) > 0)
+		{
+     
+		return false;
+		}else{
+return true;
+}]]></validationcode>
+			</setting>
+			<setting varname="chat_cat_messenger_primary_url" displayorder="50">
+				<datatype>free</datatype>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<widgets>
+	</widgets>
+	<pagetemplates>
+	</pagetemplates>
+	<pages>
+	</pages>
+	<channels>
+	</channels>
+	<routes>
+	</routes>
+</product>

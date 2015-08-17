@@ -1,0 +1,9 @@
+name = "Chatcat"
+description = "Chatcat messenger integration"
+package = Chatcat
+version = "1.0"
+core = "6.x"
+Author = 'Chatcat'
+files[] = CCAuth.php
+files[] = Common.php
+

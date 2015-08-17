@@ -1,0 +1,9 @@
+name = "Chatcat"
+description = "Chatcat messenger integration"
+core = "7.x"
+version = "7.34"
+engine = phptemplate
+configure = admin/config/chatcat
+files[] = chatcat.module
+files[] = Common.php
+files[] = CCAuth.php
