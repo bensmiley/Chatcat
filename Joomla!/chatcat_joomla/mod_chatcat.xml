@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="1.0.1" client="site" method="upgrade">
+    <name>Chatcat</name>
+    <author>Chatcat</author>
+    <version>1.0.0</version>
+    <description>Chatcat messenger integration</description>
+    <files>
+        <filename>mod_chatcat.xml</filename>
+        <filename module="mod_chatcat">mod_chatcat.php</filename>
+        <filename>helper.php</filename>
+        <filename>tmpl/default.php</filename>
+        <filename>assets/chatcat.js</filename>
+		
+		<filename>CCAuth.php</filename>
+		<!--<filename>chatcatapi.php</filename>-->
+    </files>
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+					<!--<field name="api-key"  type="text" addrulepath="/modules/mod_chatcat" validate="chatcatapi"  default="" label="Chatcat API Key" description="If left blank, single sign on will be disabled." />-->
+                    <field name="chatcat-api-key"  type="text" default="" label="Chatcat API Key" description="If left blank, single sign on will be disabled." />
+                    <field name="chatcat-secret"  type="text"  default="" label="Chatcat Secret" description="Secret can be found at dev.chatcatapp.com" />
+					<field name="chatcat-login-url"  type="text" default="" label="Login URL" description="Enter custom login URL" />
+					<field name="chatcat-register-url"  type="text" default="" label="Registration URL" description="Enter custom registration URL" />
+					<field name="chatcat-primary-url"  type="text" default="" label="Primary URL" description="" />
+			</fieldset>
+		</fields>
+    </config>
+</extension>
