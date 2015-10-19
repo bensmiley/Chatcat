@@ -178,8 +178,7 @@ function chatcat_insert_footer() {
             $username = $user['username'];
             $dateOfBirth = strtotime($user['birthday']) * 1000;
             
-            var_dump($user);
-            
+            //var_dump($user);
             
             // Get the user's description
             $description = $user['fid2'];
