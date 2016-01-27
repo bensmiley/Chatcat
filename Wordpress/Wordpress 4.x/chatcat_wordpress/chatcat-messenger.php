@@ -118,11 +118,13 @@ function cc_add_footer () {
     // Get the URL for the module this will let us set the
     $module_url = plugin_dir_url(__FILE__);
 
+    
+
     $options = get_option('cc_options');
 
     // Get the URL of the API connector script
-	$api_url = strlen($options['api_key']) ?  admin_url('admin-ajax.php') : '';
-
+    //$api_url = $module_url . 'cc-auth-api.php';
+    $api_url = strlen($options['api_key']) ?  admin_url('admin-ajax.php') : '';
 
     // If the API key isn't set disable the API URL
     $secret = $options['secret'];
@@ -144,6 +146,7 @@ function cc_add_footer () {
 
     $primary_url = $options['primary_url'];
 
+    $config_options = $options['config_options'];
 
     // Include the chat in the footer
     ?>
@@ -158,16 +161,18 @@ function cc_add_footer () {
             primaryDomain: '<?php echo $primary_url  ?>',
             <?php endif ?>
 
+
+
             // Users can create public chat rooms?
             // If this is true users will be able to setup new
             // public rooms
-            usersCanCreatePublicRooms: true,
+            //usersCanCreatePublicRooms: true,
 
             // Allow anonymous login?
-            anonymousLoginEnabled: true,
+            //anonymousLoginEnabled: true,
 
             // Enable social login - please email us to get your domain whitelisted
-            socialLoginEnabled: true,
+            //socialLoginEnabled: true,
 
             // The URL to contact for single sign on
             singleSignOnURL: '<?php  echo $api_url ?>',
@@ -176,7 +181,7 @@ function cc_add_footer () {
 			apiLevel: 1,
 
 
-            disableUserNameChange: true,
+            //disableUserNameChange: false,
 
             // Optional - if this is set the login box will direct users
             // to log in
@@ -184,25 +189,31 @@ function cc_add_footer () {
 
             // Optional - if this is set the login box will direct users
             // to register
-            registerURL: '<?php echo $register_url?>'
+            registerURL: '<?php echo $register_url?>',
+
+            <?php
+             if(isset($config_options) && strlen($config_options)) {
+                echo $config_options;
+             }
+             ?>
 
         }
 
         var ccProtocol = (('https:' == document.location.protocol) ? 'https://' : 'http://');
 
-//     <?php if ($_GET['test']) { ?>
-// 
-//         // TEST
-//         document.write(decodeURI("%3Clink rel='stylesheet' href='" + ccProtocol + "chatcat/dist/css/_/cc_styles.min.css' %3E%3C/link%3E"));
-//         document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat/dist/js/all.js' type='text/javascript'%3E%3C/script%3E"));
-// 
-//     <?php } else { ?>
+    <?php if (!$_GET['prod']) { ?>
+
+        // TEST
+        document.write(decodeURI("%3Clink rel='stylesheet' href='" + ccProtocol + "chatcat/dist/css/_/cc_styles.min.css' %3E%3C/link%3E"));
+        document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat/dist/js/all.js' type='text/javascript'%3E%3C/script%3E"));
+
+    <?php } else { ?>
 
         // PRODUCTION
         document.write(decodeURI("%3Clink rel='stylesheet' href='" + ccProtocol + "chatcat.firebaseapp.com/css/_/cc_styles.min.css' %3E%3C/link%3E"));
         document.write(decodeURI("%3Cscript src='" + ccProtocol + "chatcat.firebaseapp.com/js/all.min.js' type='text/javascript'%3E%3C/script%3E"));
 
-//     <?php } ?>
+    <?php } ?>
 
     </script>
 
@@ -275,6 +286,13 @@ function cc_print_primary_url_key_field() {
     echo "<input id='cc_plugin_text_string_primary_url' name='cc_options[primary_url]' size='40' type='text' value='{$value}' />";
 }
 
+function cc_print_config_options_field() {
+    $options = get_option('cc_options');
+    $value = isset($options['config_options']) ? $options['config_options'] : '';
+    //echo "<input id='cc_plugin_text_string_config_options' name='cc_options[config_options]' size='40' type='text' value='{$value}' />";
+    echo "<textarea id='cc_plugin_text_string_config_options' cols=\"39\" rows=\"10\" name='cc_options[config_options]'>{$value}</textarea>";
+}
+
 
 // Validation
 function plugin_options_validate($input) {
@@ -317,4 +335,6 @@ function chatcat_admin_init(){
     add_settings_field('cc_plugin_text_string_login', 'Login Page URL (optional)', 'cc_print_login_key_field', 'cc_plugin', 'cc_plugin_main');
     add_settings_field('cc_plugin_text_string_register', 'Register Page URL (optional)', 'cc_print_register_key_field', 'cc_plugin', 'cc_plugin_main');
     add_settings_field('cc_plugin_text_string_primary_url', 'Primary URL (optional)', 'cc_print_primary_url_key_field', 'cc_plugin', 'cc_plugin_main');
+    add_settings_field('cc_plugin_text_string_config_options', 'Configuration Options (optional)', 'cc_print_config_options_field', 'cc_plugin', 'cc_plugin_main');
+
 }
